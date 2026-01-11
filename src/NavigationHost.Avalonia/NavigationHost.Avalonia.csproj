@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+        <Authors>Wenczeslaw</Authors>
+        <!-- NuGet package metadata -->
+        <PackageId>NavigationHost.Avalonia</PackageId>
+        <Version>1.0.0</Version>
+        <Description>A lightweight and flexible navigation library for Avalonia applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping and dependency injection.</Description>
+        <PackageTags>Avalonia;Navigation;MVVM;XAML;DI</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>MIT</Copyright>
+        <RepositoryUrl>https://github.com/Wenczeslaw/Avalonia.Navigation.git</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>NavigationHost.Avalonia.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\docs\Nuget.md" Pack="true" PackagePath="\readme.md" />
+	</ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.10" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Themes\**\*.axaml" />
+    </ItemGroup>
+
+</Project>

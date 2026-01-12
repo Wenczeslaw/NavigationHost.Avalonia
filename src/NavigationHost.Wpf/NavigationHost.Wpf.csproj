@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+        <Authors>Wenczeslaw</Authors>
+        <!-- NuGet package metadata -->
+        <PackageId>NavigationHost.WPF</PackageId>
+        <Version>1.0.0</Version>
+        <Description>A lightweight and flexible navigation library for WPF applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping and dependency injection.</Description>
+        <PackageTags>WPF;Navigation;MVVM;XAML;DI</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>MIT</Copyright>
+        <RepositoryUrl>https://github.com/Wenczeslaw/Avalonia.Navigation.git</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <TargetFrameworks>net8.0-windows;net6.0-windows</TargetFrameworks>
+        <UseWPF>true</UseWPF>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>NavigationHost.WPF.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\docs\Nuget.md" Pack="true" PackagePath="\readme.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NavigationHost.Abstractions\NavigationHost.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>
+

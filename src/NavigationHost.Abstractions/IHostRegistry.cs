@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
-using AbstractionsNS = NavigationHost.Abstractions;
 
-namespace NavigationHost.Avalonia.Abstractions
+namespace NavigationHost.Abstractions
 {
     /// <summary>
-    ///     Service responsible for managing navigation host registration and retrieval for Avalonia.
+    ///     Service responsible for managing navigation host registration and retrieval.
     /// </summary>
-    public interface IHostRegistry : AbstractionsNS.IHostRegistry<NavigationHost>
+    /// <typeparam name="THost">The type of navigation host.</typeparam>
+    public interface IHostRegistry<THost> where THost : class
     {
         /// <summary>
         ///     Registers a navigation host with the specified host name.
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
         /// <param name="host">The navigation host to register.</param>
-        void RegisterHost(string hostName, NavigationHost host);
+        void RegisterHost(string hostName, THost host);
 
         /// <summary>
         ///     Unregisters a host with the specified name.
@@ -27,7 +27,7 @@ namespace NavigationHost.Avalonia.Abstractions
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        NavigationHost? GetHost(string hostName);
+        THost? GetHost(string hostName);
 
         /// <summary>
         ///     Gets all registered host names.
@@ -36,5 +36,4 @@ namespace NavigationHost.Avalonia.Abstractions
         IEnumerable<string> GetHostNames();
     }
 }
-
 

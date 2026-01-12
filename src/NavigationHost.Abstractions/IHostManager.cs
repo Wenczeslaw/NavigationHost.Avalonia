@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using Avalonia.Controls;
-using AbstractionsNS = NavigationHost.Abstractions;
 
-namespace NavigationHost.Avalonia.Abstractions
+namespace NavigationHost.Abstractions
 {
     /// <summary>
-    ///     Defines the host manager service interface for Avalonia.
+    ///     Defines the host manager service interface.
     ///     Manages multiple navigation hosts and provides centralized navigation control.
     ///     Note: Stack functionality has been removed.
     /// </summary>
-    public interface IHostManager : AbstractionsNS.IHostManager<Control, NavigationHost>
+    /// <typeparam name="TContent">The type of content that can be displayed (e.g., Control, UserControl).</typeparam>
+    /// <typeparam name="THost">The type of navigation host.</typeparam>
+    public interface IHostManager<TContent, THost> 
+        where TContent : class
+        where THost : class
     {
         /// <summary>
         ///     Registers a navigation host with the specified host name.
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
-        /// <param name="navigationHost">The navigation host to register.</param>
-        void RegisterHost(string hostName, NavigationHost navigationHost);
+        /// <param name="host">The navigation host to register.</param>
+        void RegisterHost(string hostName, THost host);
 
         /// <summary>
         ///     Unregisters a host with the specified name.
@@ -31,7 +33,7 @@ namespace NavigationHost.Avalonia.Abstractions
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        NavigationHost? GetHost(string hostName);
+        THost? GetHost(string hostName);
 
         /// <summary>
         ///     Gets all registered host names.
@@ -44,7 +46,7 @@ namespace NavigationHost.Avalonia.Abstractions
         /// </summary>
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="content">The content to navigate to.</param>
-        void Navigate(string hostName, Control content);
+        void Navigate(string hostName, TContent content);
 
         /// <summary>
         ///     Navigates to the specified content type with optional parameters in a host.
@@ -65,7 +67,7 @@ namespace NavigationHost.Avalonia.Abstractions
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
         void Navigate<T>(string hostName, object? parameter = null)
-            where T : Control;
+            where T : TContent;
     }
 }
 

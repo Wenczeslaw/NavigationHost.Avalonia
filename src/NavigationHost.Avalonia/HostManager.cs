@@ -57,10 +57,10 @@ namespace NavigationHost.Avalonia
         ///     Registers a navigation host with the specified host name.
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
-        /// <param name="host">The navigation host to register.</param>
-        public void RegisterHost(string hostName, NavigationHost host)
+        /// <param name="navigationHost">The navigation host to register.</param>
+        public void RegisterHost(string hostName, NavigationHost navigationHost)
         {
-            _hostRegistry.RegisterHost(hostName, host);
+            _hostRegistry.RegisterHost(hostName, navigationHost);
         }
 
         /// <summary>
@@ -304,23 +304,23 @@ namespace NavigationHost.Avalonia
         /// <summary>
         ///     Internal method to handle navigation with view-viewmodel resolution.
         /// </summary>
-        /// <param name="host">The navigation host.</param>
+        /// <param name="navigationHost">The navigation host.</param>
         /// <param name="viewType">The type of view to navigate to.</param>
         /// <param name="viewModelType">The type of view model to create.</param>
         /// <param name="parameter">Optional parameter to pass to the view model.</param>
         private void NavigateWithViewModelInternal(
-            NavigationHost host,
+            NavigationHost navigationHost,
             Type viewType,
             Type viewModelType,
             object? parameter
         )
         {
-            var currentContent = host.CurrentContent;
+            var currentContent = navigationHost.CurrentContent;
 
             // Navigation lifecycle: Check if current ViewModel allows navigation away
             // Only check if DataContext is not inherited from parent (NavigationHost)
             if (currentContent is { DataContext: { } } &&
-                currentContent.DataContext != host.DataContext &&
+                currentContent.DataContext != navigationHost.DataContext &&
                 currentContent.DataContext is INavigationAware currentNavigationAware)
                 if (!currentNavigationAware.CanNavigateFrom())
                     // Navigation cancelled by current ViewModel
@@ -340,7 +340,7 @@ namespace NavigationHost.Avalonia
             // Navigation lifecycle: Notify current ViewModel about navigation away
             // Only notify if DataContext is not inherited from parent
             if (currentContent is { DataContext: { } } &&
-                currentContent.DataContext != host.DataContext &&
+                currentContent.DataContext != navigationHost.DataContext &&
                 currentContent.DataContext is INavigationAware currentAware)
                 currentAware.OnNavigatedFrom();
 
@@ -348,7 +348,7 @@ namespace NavigationHost.Avalonia
             if (viewModel is INavigationAware navigationAware) navigationAware.OnNavigatedTo(parameter);
 
             view.DataContext = viewModel;
-            host.Navigate(view);
+            navigationHost.Navigate(view);
         }
     }
 }

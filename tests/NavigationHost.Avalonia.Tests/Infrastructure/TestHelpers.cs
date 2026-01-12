@@ -74,33 +74,33 @@ namespace NavigationHost.Avalonia.Tests.Infrastructure
         /// Asserts that a host has the expected current content.
         /// </summary>
         public static void ShouldHaveContent<TView>(
-            this NavigationHost host)
+            this NavigationHost navigationHost)
             where TView : Control
         {
-            host.CurrentContent.Should().NotBeNull("host should have current content");
-            host.CurrentContent.Should().BeOfType<TView>();
+            navigationHost.CurrentContent.Should().NotBeNull("host should have current content");
+            navigationHost.CurrentContent.Should().BeOfType<TView>();
         }
 
         /// <summary>
         /// Asserts that a host's current content has the expected viewmodel.
         /// </summary>
         public static void ShouldHaveViewModel<TViewModel>(
-            this NavigationHost host)
+            this NavigationHost navigationHost)
         {
-            host.CurrentContent.Should().NotBeNull("host should have current content");
-            host.CurrentContent!.DataContext.Should().NotBeNull("content should have DataContext");
-            host.CurrentContent.DataContext.Should().BeOfType<TViewModel>();
+            navigationHost.CurrentContent.Should().NotBeNull("host should have current content");
+            navigationHost.CurrentContent!.DataContext.Should().NotBeNull("content should have DataContext");
+            navigationHost.CurrentContent.DataContext.Should().BeOfType<TViewModel>();
         }
 
         /// <summary>
         /// Asserts that a host has both the expected view and viewmodel.
         /// </summary>
         public static void ShouldHaveViewAndViewModel<TView, TViewModel>(
-            this NavigationHost host)
+            this NavigationHost navigationHost)
             where TView : Control
         {
-            host.ShouldHaveContent<TView>();
-            host.ShouldHaveViewModel<TViewModel>();
+            navigationHost.ShouldHaveContent<TView>();
+            navigationHost.ShouldHaveViewModel<TViewModel>();
         }
 
         /// <summary>

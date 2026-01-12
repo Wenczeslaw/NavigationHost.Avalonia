@@ -38,20 +38,20 @@ namespace NavigationHost.Avalonia.Services
         /// <summary>
         ///     Registers a pending host registration that will be processed when HostManager becomes available.
         /// </summary>
-        /// <param name="host">The NavigationHost to register.</param>
+        /// <param name="navigationHost">The NavigationHost to register.</param>
         /// <param name="hostName">The name for the host.</param>
-        internal static void RegisterPending(NavigationHost host, string hostName)
+        internal static void RegisterPending(NavigationHost navigationHost, string hostName)
         {
             // If HostManager is already available, register immediately
             if (_instance != null && _instance is HostManager hostManager)
             {
-                hostManager.RegisterHost(hostName, host);
-                HostManager.SetHostManager(host, hostManager);
+                hostManager.RegisterHost(hostName, navigationHost);
+                HostManager.SetHostManager(navigationHost, hostManager);
                 return;
             }
 
             // Otherwise, add to pending list
-            _pendingRegistrations.Add(new PendingRegistration(host, hostName));
+            _pendingRegistrations.Add(new PendingRegistration(navigationHost, hostName));
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace NavigationHost.Avalonia.Services
 
             foreach (var pending in _pendingRegistrations)
             {
-                hostManager.RegisterHost(pending.HostName, pending.Host);
-                HostManager.SetHostManager(pending.Host, hostManager);
+                hostManager.RegisterHost(pending.HostName, pending.NavigationHost);
+                HostManager.SetHostManager(pending.NavigationHost, hostManager);
             }
 
             _pendingRegistrations.Clear();
@@ -86,12 +86,12 @@ namespace NavigationHost.Avalonia.Services
         /// </summary>
         private class PendingRegistration
         {
-            public NavigationHost Host { get; }
+            public NavigationHost NavigationHost { get; }
             public string HostName { get; }
 
-            public PendingRegistration(NavigationHost host, string hostName)
+            public PendingRegistration(NavigationHost navigationHost, string hostName)
             {
-                Host = host;
+                NavigationHost = navigationHost;
                 HostName = hostName;
             }
         }

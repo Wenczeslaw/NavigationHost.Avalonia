@@ -1,7 +1,7 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:NavigationHost.Avalonia"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:NavigationHost.Avalonia">
 
     <Style Selector="avalonia|NavigationHost">
         <Setter Property="Template">
@@ -12,12 +12,12 @@
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}">
                     <ContentControl
-                        Content="{TemplateBinding CurrentContent}"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Stretch"
                         Name="PART_ContentPresenter"
+                        HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        VerticalContentAlignment="Stretch" />
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        Content="{TemplateBinding CurrentContent}" />
                 </Border>
             </ControlTemplate>
         </Setter>

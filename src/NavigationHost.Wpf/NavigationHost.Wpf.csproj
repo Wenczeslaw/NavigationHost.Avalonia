@@ -6,7 +6,7 @@
         <Authors>Wenczeslaw</Authors>
         <!-- NuGet package metadata -->
         <PackageId>NavigationHost.WPF</PackageId>
-        <Version>1.0.0</Version>
+        <Version>2.0.0</Version>
         <Description>A lightweight and flexible navigation library for WPF applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping and dependency injection.</Description>
         <PackageTags>WPF;Navigation;MVVM;XAML;DI</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

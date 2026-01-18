@@ -3,17 +3,17 @@
 namespace NavigationHost.Abstractions
 {
     /// <summary>
-    ///     Service responsible for managing navigation host registration and retrieval.
+    ///     Platform-agnostic interface for host registry service.
+    ///     Manages registration and retrieval of navigation hosts.
     /// </summary>
-    /// <typeparam name="THost">The type of navigation host.</typeparam>
-    public interface IHostRegistry<THost> where THost : class
+    public interface IHostRegistry
     {
         /// <summary>
         ///     Registers a navigation host with the specified host name.
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
         /// <param name="host">The navigation host to register.</param>
-        void RegisterHost(string hostName, THost host);
+        void RegisterHost(string hostName, INavigationHost host);
 
         /// <summary>
         ///     Unregisters a host with the specified name.
@@ -27,7 +27,7 @@ namespace NavigationHost.Abstractions
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        THost? GetHost(string hostName);
+        INavigationHost? GetHost(string hostName);
 
         /// <summary>
         ///     Gets all registered host names.
@@ -36,4 +36,3 @@ namespace NavigationHost.Abstractions
         IEnumerable<string> GetHostNames();
     }
 }
-

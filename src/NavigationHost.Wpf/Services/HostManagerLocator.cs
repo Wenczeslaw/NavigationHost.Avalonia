@@ -1,5 +1,5 @@
 ﻿using System;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 
 namespace NavigationHost.WPF.Services
 {

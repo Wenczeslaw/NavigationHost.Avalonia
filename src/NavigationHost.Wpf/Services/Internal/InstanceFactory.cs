@@ -1,19 +1,41 @@
-﻿using System;
+﻿﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using AbstractionsNS = NavigationHost.Abstractions;
 
 namespace NavigationHost.WPF.Services.Internal
 {
     /// <summary>
     ///     Internal service responsible for creating instances of views and view models.
     ///     Uses the DI container when available, falls back to Activator.CreateInstance.
+    ///     Implements platform-agnostic IInstanceFactory interface.
     /// </summary>
-    internal sealed class InstanceFactory
+    internal sealed class InstanceFactory : AbstractionsNS.IInstanceFactory
     {
         private readonly IServiceProvider? _serviceProvider;
 
         public InstanceFactory(IServiceProvider? serviceProvider)
         {
             _serviceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        ///     Creates a view instance from the DI container or Activator.
+        /// </summary>
+        /// <param name="viewType">The type of view to create.</param>
+        /// <returns>A view instance.</returns>
+        public object CreateView(Type viewType)
+        {
+            return CreateInstance(viewType);
+        }
+
+        /// <summary>
+        ///     Creates a view model instance from the DI container or Activator.
+        /// </summary>
+        /// <param name="viewModelType">The type of view model to create.</param>
+        /// <returns>A view model instance.</returns>
+        public object CreateViewModel(Type viewModelType)
+        {
+            return CreateInstance(viewModelType);
         }
 
         /// <summary>

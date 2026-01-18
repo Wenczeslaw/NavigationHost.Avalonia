@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Markup;
 
 [assembly: ThemeInfo(
@@ -10,7 +10,6 @@ using System.Windows.Markup;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: XmlnsDefinition("http://schemas.navigationhost.com/winfx/2006/xaml/presentation", "NavigationHost.WPF")]
-[assembly: XmlnsDefinition("http://schemas.navigationhost.com/winfx/2006/xaml/presentation", "NavigationHost.WPF.Abstractions")]
-[assembly: XmlnsPrefix("http://schemas.navigationhost.com/winfx/2006/xaml/presentation", "navigationHost")]
+[assembly: XmlnsDefinition("http://schemas.navigationhost/wpf", "NavigationHost.WPF")]
+[assembly: XmlnsPrefix("http://schemas.navigationhost/wpf", "nav")]
 

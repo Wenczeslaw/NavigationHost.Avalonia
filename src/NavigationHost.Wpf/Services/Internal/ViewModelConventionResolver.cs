@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 
 namespace NavigationHost.WPF.Services.Internal
 {

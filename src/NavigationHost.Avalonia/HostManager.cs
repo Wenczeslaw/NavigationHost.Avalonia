@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.Avalonia.Services;
+using NavigationHost.Avalonia.Services.Internal;
 
 namespace NavigationHost.Avalonia
 {
@@ -31,7 +32,7 @@ namespace NavigationHost.Avalonia
 
         private readonly IHostRegistry _hostRegistry;
         private readonly IViewModelConventionResolver _conventionResolver;
-        private readonly Services.Internal.InstanceFactory _instanceFactory;
+        private readonly InstanceFactory _instanceFactory;
 
         static HostManager()
         {
@@ -46,7 +47,7 @@ namespace NavigationHost.Avalonia
         internal HostManager(
             IHostRegistry hostRegistry,
             IViewModelConventionResolver conventionResolver,
-            Services.Internal.InstanceFactory instanceFactory)
+            InstanceFactory instanceFactory)
         {
             _hostRegistry = hostRegistry ?? throw new ArgumentNullException(nameof(hostRegistry));
             _conventionResolver = conventionResolver ?? throw new ArgumentNullException(nameof(conventionResolver));
@@ -57,10 +58,10 @@ namespace NavigationHost.Avalonia
         ///     Registers a navigation host with the specified host name.
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
-        /// <param name="navigationHost">The navigation host to register.</param>
-        public void RegisterHost(string hostName, NavigationHost navigationHost)
+        /// <param name="host">The navigation host to register.</param>
+        public void RegisterHost(string hostName, INavigationHost host)
         {
-            _hostRegistry.RegisterHost(hostName, navigationHost);
+            _hostRegistry.RegisterHost(hostName, host);
         }
 
         /// <summary>
@@ -78,9 +79,34 @@ namespace NavigationHost.Avalonia
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        public NavigationHost? GetHost(string hostName)
+        public INavigationHost? GetHost(string hostName)
         {
             return _hostRegistry.GetHost(hostName);
+        }
+
+        /// <summary>
+        ///     Gets a platform-specific navigation host by host name (internal helper).
+        /// </summary>
+        /// <param name="hostName">The name of the host.</param>
+        /// <returns>The navigation host, or null if not found.</returns>
+        private NavigationHost? GetPlatformHost(string hostName)
+        {
+            var host = _hostRegistry.GetHost(hostName);
+            return host as NavigationHost;
+        }
+
+        /// <summary>
+        ///     Gets a platform-specific navigation host by host name and throws if not found.
+        /// </summary>
+        /// <param name="hostName">The name of the host.</param>
+        /// <returns>The navigation host.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when no host is registered with the specified name.</exception>
+        private NavigationHost GetHostOrThrow(string hostName)
+        {
+            var host = GetPlatformHost(hostName);
+            if (host == null)
+                throw new InvalidOperationException($"No host registered with name '{hostName}'.");
+            return host;
         }
 
         /// <summary>
@@ -97,15 +123,21 @@ namespace NavigationHost.Avalonia
         /// </summary>
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="content">The content to navigate to.</param>
-        public void Navigate(string hostName, Control content)
+        public void Navigate(string hostName, object content)
         {
-            var host = GetHostOrThrow(hostName);
+            var host = GetPlatformHost(hostName);
+            if (host == null)
+                throw new InvalidOperationException($"No host registered with name '{hostName}'.");
+
+            if (!(content is Control controlContent))
+                throw new ArgumentException("Content must be a Control for Avalonia platform.", nameof(content));
 
             var currentContent = host.CurrentContent;
 
             // Navigation lifecycle: Check if current ViewModel allows navigation away
             // Only check if DataContext is not inherited from parent (NavigationHost)
-            if (currentContent is { DataContext: { } } &&
+            if (currentContent != null && 
+                currentContent.DataContext != null &&
                 currentContent.DataContext != host.DataContext &&
                 currentContent.DataContext is INavigationAware currentNavigationAware)
             {
@@ -116,7 +148,7 @@ namespace NavigationHost.Avalonia
                 currentNavigationAware.OnNavigatedFrom();
             }
 
-            host.Navigate(content);
+            host.Navigate(controlContent);
         }
 
         /// <summary>
@@ -167,7 +199,7 @@ namespace NavigationHost.Avalonia
         public void Navigate<T>(
             string hostName,
             object? parameter = null
-        ) where T : Control
+        )
         {
             Navigate(hostName, typeof(T), parameter);
         }
@@ -240,12 +272,17 @@ namespace NavigationHost.Avalonia
             if (hostManager == null)
             {
                 // Try to get from locator
-                if (HostManagerLocator.IsInitialized && HostManagerLocator.Current is HostManager locatorManager)
+                if (HostManagerLocator.IsInitialized && HostManagerLocator.Current != null)
                 {
-                    hostManager = locatorManager;
-                    SetHostManager(control, locatorManager);
+                    var current = HostManagerLocator.Current;
+                    if (current is HostManager locatorManager)
+                    {
+                        hostManager = locatorManager;
+                        SetHostManager(control, locatorManager);
+                    }
                 }
-                else
+                
+                if (hostManager == null)
                 {
                     // HostManager not yet available, register as pending
                     if (!string.IsNullOrWhiteSpace(newName))
@@ -288,20 +325,6 @@ namespace NavigationHost.Avalonia
         }
 
         /// <summary>
-        ///     Gets a host and ensures it exists, throwing an exception if not found.
-        /// </summary>
-        /// <param name="hostName">The name of the host.</param>
-        /// <returns>The navigation host.</returns>
-        /// <exception cref="InvalidOperationException">Thrown when the host is not registered.</exception>
-        private NavigationHost GetHostOrThrow(string hostName)
-        {
-            var host = GetHost(hostName);
-            if (host == null)
-                throw new InvalidOperationException($"Host '{hostName}' is not registered.");
-            return host;
-        }
-
-        /// <summary>
         ///     Internal method to handle navigation with view-viewmodel resolution.
         /// </summary>
         /// <param name="navigationHost">The navigation host.</param>
@@ -327,8 +350,11 @@ namespace NavigationHost.Avalonia
                     return;
 
             // Create view and viewmodel instances from DI container
-            var view = _instanceFactory.CreateView(viewType);
+            var viewObj = _instanceFactory.CreateView(viewType);
             var viewModel = _instanceFactory.CreateViewModel(viewModelType);
+
+            if (!(viewObj is Control view))
+                throw new InvalidOperationException("Created view must be a Control");
 
             // Navigation lifecycle: Request confirmation from target ViewModel
             if (viewModel is INavigationAware targetNavigationAware)
@@ -345,7 +371,8 @@ namespace NavigationHost.Avalonia
                 currentAware.OnNavigatedFrom();
 
             // Set parameter using INavigationAware interface
-            if (viewModel is INavigationAware navigationAware) navigationAware.OnNavigatedTo(parameter);
+            if (viewModel is INavigationAware navigationAware) 
+                navigationAware.OnNavigatedTo(parameter);
 
             view.DataContext = viewModel;
             navigationHost.Navigate(view);

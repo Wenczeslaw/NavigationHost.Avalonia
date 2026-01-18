@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <LangVersion>8</LangVersion>
+        <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
         <Authors>Wenczeslaw</Authors>
         <!-- NuGet package metadata -->
@@ -14,8 +14,9 @@
         <Copyright>MIT</Copyright>
         <RepositoryUrl>https://github.com/Wenczeslaw/Avalonia.Navigation.git</RepositoryUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <UserSecretsId>535919ee-badd-447b-9485-cf730d19369a</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,11 +26,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\docs\Nuget.md" Pack="true" PackagePath="\readme.md" />
+        <None Include="..\..\docs\Nuget_Avalonia.md" Pack="true" PackagePath="\readme.md" />
 	</ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.10" />
+        <PackageReference Include="Avalonia" Version="11.3.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     </ItemGroup>

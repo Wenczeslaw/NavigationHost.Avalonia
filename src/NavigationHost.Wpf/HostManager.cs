@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Services;
-
 namespace NavigationHost.WPF
 {
     /// <summary>
@@ -59,7 +58,7 @@ namespace NavigationHost.WPF
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
         /// <param name="host">The navigation host to register.</param>
-        public void RegisterHost(string hostName, NavigationHost host)
+        public void RegisterHost(string hostName, INavigationHost host)
         {
             _hostRegistry.RegisterHost(hostName, host);
         }
@@ -79,9 +78,18 @@ namespace NavigationHost.WPF
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        public NavigationHost? GetHost(string hostName)
+        public INavigationHost? GetHost(string hostName)
         {
             return _hostRegistry.GetHost(hostName);
+        }
+
+        /// <summary>
+        ///     Gets a platform-specific navigation host by host name (internal helper).
+        /// </summary>
+        private NavigationHost? GetPlatformHost(string hostName)
+        {
+            var host = _hostRegistry.GetHost(hostName);
+            return host as NavigationHost;
         }
 
         /// <summary>
@@ -98,7 +106,7 @@ namespace NavigationHost.WPF
         /// </summary>
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="content">The content to navigate to.</param>
-        public void Navigate(string hostName, FrameworkElement content)
+        public void Navigate(string hostName, object content)
         {
             if (string.IsNullOrWhiteSpace(hostName))
                 throw new ArgumentException("Host name cannot be null or whitespace.", nameof(hostName));
@@ -106,11 +114,14 @@ namespace NavigationHost.WPF
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
+            if (!(content is FrameworkElement frameworkElement))
+                throw new ArgumentException("Content must be a FrameworkElement for WPF platform.", nameof(content));
+
             var host = GetHost(hostName);
             if (host == null)
                 throw new InvalidOperationException($"No host registered with name '{hostName}'.");
 
-            host.Navigate(content);
+            host.SetContent(frameworkElement);
         }
 
         /// <summary>
@@ -131,10 +142,13 @@ namespace NavigationHost.WPF
                 throw new ArgumentException($"Content type must derive from FrameworkElement.", nameof(contentType));
 
             // Create the view instance
-            var view = (FrameworkElement)_instanceFactory.CreateInstance(contentType);
+            var view = _instanceFactory.CreateInstance(contentType);
 
             // Try to resolve and set ViewModel using convention
-            TrySetViewModelByConvention(view, parameter);
+            if (view is FrameworkElement frameworkElement)
+            {
+                TrySetViewModelByConvention(frameworkElement, parameter);
+            }
 
             // Navigate to the view
             Navigate(hostName, view);
@@ -146,7 +160,7 @@ namespace NavigationHost.WPF
         /// <typeparam name="T">The type of content to navigate to.</typeparam>
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
-        public void Navigate<T>(string hostName, object? parameter = null) where T : FrameworkElement
+        public void Navigate<T>(string hostName, object? parameter = null)
         {
             Navigate(hostName, typeof(T), parameter);
         }
@@ -187,18 +201,38 @@ namespace NavigationHost.WPF
         {
             if (d is NavigationHost host && e.NewValue is string hostName && !string.IsNullOrWhiteSpace(hostName))
             {
+                // First try to get HostManager from attached property
                 var hostManager = GetHostManager(d);
+                
                 if (hostManager != null)
                 {
                     hostManager.RegisterHost(hostName, host);
                 }
                 else
                 {
-                    // Store for later registration when HostManager is set
+                    // If not set via attached property, try to get from HostManagerLocator
+                    // Register on Loaded event to ensure the host is fully initialized
                     host.Loaded += (s, args) =>
                     {
                         var manager = GetHostManager(host);
-                        if (manager != null)
+                        if (manager == null)
+                        {
+                            // Try to get from HostManagerLocator as fallback
+                            try
+                            {
+                                var locatorManager = HostManagerLocator.Current;
+                                if (locatorManager is HostManager platformManager)
+                                {
+                                    platformManager.RegisterHost(hostName, host);
+                                }
+                            }
+                            catch
+                            {
+                                // HostManagerLocator.Current may throw if not initialized
+                                // This is expected in some scenarios, so we silently ignore
+                            }
+                        }
+                        else
                         {
                             manager.RegisterHost(hostName, host);
                         }
@@ -232,7 +266,7 @@ namespace NavigationHost.WPF
 
             try
             {
-                var viewModel = _instanceFactory.CreateInstance(viewModelType);
+                var viewModel = _instanceFactory.CreateViewModel(viewModelType);
 
                 // If ViewModel implements INavigationAware, call navigation methods
                 if (viewModel is INavigationAware navigationAware)

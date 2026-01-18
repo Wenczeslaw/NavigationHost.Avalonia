@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using NavigationHost.WPF.Abstractions;
-using NavigationHost.WPF.Events;
+using NavigationHost.Abstractions;
 
 namespace NavigationHost.WPF
 {
@@ -64,9 +63,24 @@ namespace NavigationHost.WPF
         }
 
         /// <summary>
-        ///     Occurs when navigation has completed.
+        ///     Gets the current content as object (INavigationHost implementation).
         /// </summary>
-        public event EventHandler<NavigationEventArgs>? Navigated;
+        object? INavigationHost.CurrentContent => CurrentContent;
+
+        /// <summary>
+        ///     Sets the content (INavigationHost implementation).
+        /// </summary>
+        void INavigationHost.SetContent(object content)
+        {
+            if (content is FrameworkElement element)
+            {
+                Navigate(element);
+            }
+            else
+            {
+                throw new ArgumentException("Content must be a WPF FrameworkElement", nameof(content));
+            }
+        }
 
         /// <summary>
         ///     Navigates to the specified content.
@@ -76,11 +90,8 @@ namespace NavigationHost.WPF
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
-
-            var previousContent = CurrentContent;
-            CurrentContent = content;
             
-            Navigated?.Invoke(this, new NavigationEventArgs(content, previousContent));
+            CurrentContent = content;
         }
 
         private static void OnCurrentContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

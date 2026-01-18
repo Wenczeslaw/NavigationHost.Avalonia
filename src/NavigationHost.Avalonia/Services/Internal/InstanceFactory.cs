@@ -1,13 +1,15 @@
 ﻿using System;
 using Avalonia.Controls;
+using AbstractionsNS = NavigationHost.Abstractions;
 
 namespace NavigationHost.Avalonia.Services.Internal
 {
     /// <summary>
     /// Internal implementation of instance factory.
     /// Uses DI container (IServiceProvider) to resolve views and viewmodels.
+    /// Implements platform-agnostic IInstanceFactory interface.
     /// </summary>
-    internal sealed class InstanceFactory
+    internal sealed class InstanceFactory : AbstractionsNS.IInstanceFactory
     {
         private IServiceProvider? _serviceProvider;
 
@@ -23,12 +25,13 @@ namespace NavigationHost.Avalonia.Services.Internal
 
         /// <summary>
         /// Creates a view instance from the DI container.
+        /// Returns platform-specific Control wrapped as object.
         /// </summary>
         /// <param name="viewType">The type of view to create.</param>
         /// <returns>A view instance resolved from the DI container.</returns>
         /// <exception cref="InvalidOperationException">Thrown when service provider is not configured.</exception>
         /// <exception cref="InvalidOperationException">Thrown when view cannot be resolved from DI container.</exception>
-        public Control CreateView(Type viewType)
+        public object CreateView(Type viewType)
         {
             if (_serviceProvider == null)
                 throw new InvalidOperationException(
@@ -63,6 +66,26 @@ namespace NavigationHost.Avalonia.Services.Internal
                     "Ensure the view model is registered in the service collection.");
 
             return viewModel;
+        }
+
+        /// <summary>
+        /// Creates an instance of any type from the DI container.
+        /// </summary>
+        /// <param name="type">The type to create.</param>
+        /// <returns>An instance resolved from the DI container.</returns>
+        public object CreateInstance(Type type)
+        {
+            if (_serviceProvider == null)
+                throw new InvalidOperationException(
+                    "Service provider is not configured. Call ConfigureServiceProvider before creating instances.");
+
+            var instance = _serviceProvider.GetService(type);
+            if (instance == null)
+                throw new InvalidOperationException(
+                    $"Unable to resolve instance of type '{type.FullName}' from the DI container. " +
+                    "Ensure the type is registered in the service collection.");
+
+            return instance;
         }
     }
 }

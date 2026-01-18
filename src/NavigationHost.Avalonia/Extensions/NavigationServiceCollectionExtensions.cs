@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.Avalonia.Services;
 using NavigationHost.Avalonia.Services.Internal;
 
@@ -21,6 +21,7 @@ namespace NavigationHost.Avalonia.Extensions
             services.AddSingleton<IHostRegistry, HostRegistry>();
             services.AddSingleton<IViewModelConventionResolver, ViewModelConventionResolver>();
             services.AddSingleton<InstanceFactory>();
+            services.AddSingleton<IInstanceFactory>(provider => provider.GetRequiredService<InstanceFactory>());
 
             services.AddSingleton<IHostManager, HostManager>(provider =>
                 {
@@ -29,7 +30,12 @@ namespace NavigationHost.Avalonia.Extensions
                     var instanceFactory = provider.GetRequiredService<InstanceFactory>();
 
                     var hostManager = new HostManager(hostRegistry, conventionResolver, instanceFactory);
-                    hostManager.ConfigureServices(provider);
+                    
+                    // Configure service provider for instance factory
+                    if (instanceFactory is InstanceFactory concreteFactory)
+                    {
+                        concreteFactory.ConfigureServiceProvider(provider);
+                    }
 
                     // ✅ 自动设置到定位器，供 NavigationHost 自动获取
                     HostManagerLocator.Current = hostManager;

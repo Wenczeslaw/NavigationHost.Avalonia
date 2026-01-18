@@ -3,8 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Metadata;
-using NavigationHost.Avalonia.Abstractions;
-using NavigationHost.Avalonia.Events;
+using AbstractionsNS = NavigationHost.Abstractions;
 
 namespace NavigationHost.Avalonia
 {
@@ -12,7 +11,7 @@ namespace NavigationHost.Avalonia
     ///     A control that provides navigation services for Avalonia applications.
     ///     Displays different views dynamically.
     /// </summary>
-    public class NavigationHost : TemplatedControl, INavigationHost
+    public class NavigationHost : TemplatedControl, AbstractionsNS.INavigationHost
     {
         /// <summary>
         ///     Defines the <see cref="CurrentContent" /> property.
@@ -65,9 +64,24 @@ namespace NavigationHost.Avalonia
         }
 
         /// <summary>
-        ///     Occurs when navigation has completed.
+        ///     Gets the current content as object (INavigationHost implementation).
         /// </summary>
-        public event EventHandler<NavigationEventArgs>? Navigated;
+        object? AbstractionsNS.INavigationHost.CurrentContent => CurrentContent;
+
+        /// <summary>
+        ///     Sets the content (INavigationHost implementation).
+        /// </summary>
+        void AbstractionsNS.INavigationHost.SetContent(object content)
+        {
+            if (content is Control control)
+            {
+                Navigate(control);
+            }
+            else
+            {
+                throw new ArgumentException("Content must be an Avalonia Control", nameof(content));
+            }
+        }
 
         /// <summary>
         ///     Navigates to the specified content.
@@ -77,13 +91,9 @@ namespace NavigationHost.Avalonia
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
-
-            var previousContent = CurrentContent;
-
+            
             CurrentContent = content;
             UpdateContentPresenter();
-
-            Navigated?.Invoke(this, new NavigationEventArgs(content, previousContent));
         }
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using NavigationHost.Avalonia.Abstractions;
+using AbstractionsNS = NavigationHost.Abstractions;
 
 namespace NavigationHost.Avalonia.Services
 {
@@ -9,13 +9,13 @@ namespace NavigationHost.Avalonia.Services
     /// </summary>
     internal static class HostManagerLocator
     {
-        private static IHostManager? _instance;
+        private static AbstractionsNS.IHostManager? _instance;
         private static readonly List<PendingRegistration> _pendingRegistrations = new List<PendingRegistration>();
 
         /// <summary>
         ///     Gets or sets the current HostManager instance.
         /// </summary>
-        public static IHostManager? Current
+        public static AbstractionsNS.IHostManager? Current
         {
             get => _instance;
             set
@@ -23,9 +23,9 @@ namespace NavigationHost.Avalonia.Services
                 _instance = value;
                 
                 // Process any pending registrations when HostManager becomes available
-                if (_instance != null && _instance is HostManager hostManager)
+                if (_instance != null)
                 {
-                    ProcessPendingRegistrations(hostManager);
+                    ProcessPendingRegistrations(_instance);
                 }
             }
         }
@@ -43,10 +43,13 @@ namespace NavigationHost.Avalonia.Services
         internal static void RegisterPending(NavigationHost navigationHost, string hostName)
         {
             // If HostManager is already available, register immediately
-            if (_instance != null && _instance is HostManager hostManager)
+            if (_instance != null)
             {
-                hostManager.RegisterHost(hostName, navigationHost);
-                HostManager.SetHostManager(navigationHost, hostManager);
+                _instance.RegisterHost(hostName, navigationHost);
+                if (_instance is HostManager hostManager)
+                {
+                    HostManager.SetHostManager(navigationHost, hostManager);
+                }
                 return;
             }
 
@@ -58,7 +61,7 @@ namespace NavigationHost.Avalonia.Services
         ///     Processes all pending host registrations.
         /// </summary>
         /// <param name="hostManager">The HostManager to register hosts with.</param>
-        private static void ProcessPendingRegistrations(HostManager hostManager)
+        private static void ProcessPendingRegistrations(AbstractionsNS.IHostManager hostManager)
         {
             if (_pendingRegistrations.Count == 0)
                 return;
@@ -66,7 +69,10 @@ namespace NavigationHost.Avalonia.Services
             foreach (var pending in _pendingRegistrations)
             {
                 hostManager.RegisterHost(pending.HostName, pending.NavigationHost);
-                HostManager.SetHostManager(pending.NavigationHost, hostManager);
+                if (hostManager is HostManager concreteManager)
+                {
+                    HostManager.SetHostManager(pending.NavigationHost, concreteManager);
+                }
             }
 
             _pendingRegistrations.Clear();

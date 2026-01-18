@@ -1,7 +1,7 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 
 namespace NavigationHost.WPF.Services.Internal
 {
@@ -18,7 +18,7 @@ namespace NavigationHost.WPF.Services.Internal
         /// </summary>
         /// <param name="hostName">The unique name for the host.</param>
         /// <param name="host">The navigation host to register.</param>
-        public void RegisterHost(string hostName, NavigationHost host)
+        public void RegisterHost(string hostName, INavigationHost host)
         {
             if (string.IsNullOrWhiteSpace(hostName))
                 throw new ArgumentException("Host name cannot be null or whitespace.", nameof(hostName));
@@ -26,7 +26,10 @@ namespace NavigationHost.WPF.Services.Internal
             if (host == null)
                 throw new ArgumentNullException(nameof(host));
 
-            if (!_hosts.TryAdd(hostName, host))
+            if (!(host is NavigationHost navigationHost))
+                throw new ArgumentException("Host must be a WPF NavigationHost instance.", nameof(host));
+
+            if (!_hosts.TryAdd(hostName, navigationHost))
                 throw new InvalidOperationException($"A host with name '{hostName}' is already registered.");
         }
 
@@ -48,7 +51,19 @@ namespace NavigationHost.WPF.Services.Internal
         /// </summary>
         /// <param name="hostName">The name of the host.</param>
         /// <returns>The navigation host, or null if not found.</returns>
-        public NavigationHost? GetHost(string hostName)
+        public INavigationHost? GetHost(string hostName)
+        {
+            if (string.IsNullOrWhiteSpace(hostName))
+                return null;
+
+            _hosts.TryGetValue(hostName, out var host);
+            return host;
+        }
+
+        /// <summary>
+        ///     Gets the platform-specific NavigationHost by host name.
+        /// </summary>
+        internal NavigationHost? GetPlatformHost(string hostName)
         {
             if (string.IsNullOrWhiteSpace(hostName))
                 return null;

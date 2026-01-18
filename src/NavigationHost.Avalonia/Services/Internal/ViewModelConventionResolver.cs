@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NavigationHost.Avalonia.Abstractions;
+using AbstractionsNS = NavigationHost.Abstractions;
 
 namespace NavigationHost.Avalonia.Services.Internal
 {
@@ -10,7 +10,7 @@ namespace NavigationHost.Avalonia.Services.Internal
     ///     Internal implementation of convention-based view model resolver.
     ///     Automatically resolves view model types from view types based on naming conventions.
     /// </summary>
-    internal sealed class ViewModelConventionResolver : IViewModelConventionResolver
+    internal sealed class ViewModelConventionResolver : AbstractionsNS.IViewModelConventionResolver
     {
         private const string ViewSuffix = "View";
         private const string ViewModelSuffix = "ViewModel";
@@ -36,7 +36,7 @@ namespace NavigationHost.Avalonia.Services.Internal
             // Search for the view model type
 
             // 1. Search in the same namespace and assembly as the view
-            var viewModelType = SearchInAssembly(viewType.Assembly, viewType.Namespace, viewModelName);
+            var viewModelType = SearchInAssembly(viewType.Assembly, viewType.Namespace, viewModelName!);
             if (viewModelType != null)
                 return viewModelType;
 
@@ -44,7 +44,7 @@ namespace NavigationHost.Avalonia.Services.Internal
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                viewModelType = SearchInAssembly(assembly, null, viewModelName);
+                viewModelType = SearchInAssembly(assembly, null, viewModelName!);
                 if (viewModelType != null)
                     return viewModelType;
             }
@@ -145,10 +145,10 @@ namespace NavigationHost.Avalonia.Services.Internal
                 return namespaces;
 
             // 1. Same namespace as View (e.g., MyApp.Views -> MyApp.Views)
-            namespaces.Add(viewNamespace);
+            namespaces.Add(viewNamespace!);
 
             // 2. Replace "Views" with "ViewModels" (e.g., MyApp.Views -> MyApp.ViewModels)
-            if (viewNamespace.Contains(".Views"))
+            if (viewNamespace!.Contains(".Views"))
             {
                 namespaces.Add(viewNamespace.Replace(".Views", ".ViewModels"));
             }

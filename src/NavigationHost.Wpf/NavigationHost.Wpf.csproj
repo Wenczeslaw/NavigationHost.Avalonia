@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <LangVersion>8</LangVersion>
@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\docs\Nuget.md" Pack="true" PackagePath="\readme.md" />
+        <None Include="..\..\docs\NuGet_WPF.md" Pack="true" PackagePath="\readme.md" />
     </ItemGroup>
 
     <ItemGroup>

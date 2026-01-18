@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using NavigationHost.WPF.Services.Internal;
-using NavigationHost.WPF.Tests.Infrastructure;
 using Xunit;
 
 namespace NavigationHost.WPF.Tests.Services.Internal

@@ -1,0 +1,293 @@
+<Window
+    x:Class="NavigationHost.Sample.Avalonia.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:nav="using:NavigationHost.Avalonia"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    Title="NavigationHost.Avalonia - Comprehensive Demo"
+    Width="1200"
+    Height="700"
+    d:DesignHeight="700"
+    d:DesignWidth="1200"
+    x:DataType="vm:MainWindowViewModel"
+    Icon="/Assets/avalonia-logo.ico"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!--  Header with Navigation Buttons  -->
+        <Border Grid.Row="0" BoxShadow="0 4 16 0 #40000000">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#6366F1" />
+                    <GradientStop Offset="0.5" Color="#8B5CF6" />
+                    <GradientStop Offset="1" Color="#A855F7" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Margin="24,18">
+                <TextBlock
+                    Margin="0,0,0,18"
+                    FontSize="32"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="✨ NavigationHost.Avalonia Demo" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Button
+                        Padding="20,12"
+                        Background="#FFFFFF"
+                        Command="{Binding NavigateHomeCommand}"
+                        Content="🏠 Home"
+                        CornerRadius="8"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#6366F1"
+                        ToolTip.Tip="Navigate to Home View">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#F0F4FF" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <Button
+                        Padding="20,12"
+                        Background="#FFFFFF"
+                        Command="{Binding NavigateProductListCommand}"
+                        Content="📦 Products"
+                        CornerRadius="8"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#8B5CF6"
+                        ToolTip.Tip="Navigate to Product List with parameters">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#F5F0FF" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <Button
+                        Padding="20,12"
+                        Background="#FFFFFF"
+                        Command="{Binding NavigateSettingsCommand}"
+                        Content="⚙️ Settings"
+                        CornerRadius="8"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#EC4899"
+                        ToolTip.Tip="Navigate to Settings (demonstrates CanNavigateFrom)">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#FFF0F7" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <Button
+                        Padding="20,12"
+                        Background="#FFFFFF"
+                        Command="{Binding NavigateUserProfileCommand}"
+                        Content="👤 Profile"
+                        CornerRadius="8"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#06B6D4"
+                        ToolTip.Tip="Navigate in secondary host with parameter">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#ECFEFF" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <Separator
+                        Width="2"
+                        Height="40"
+                        Background="White"
+                        Opacity="0.3" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  Main Content Area  -->
+        <Grid
+            Grid.Row="1"
+            Margin="20"
+            ColumnDefinitions="2*,*">
+            <!--  Main Navigation Host  -->
+            <Border
+                Grid.Column="0"
+                Margin="0,0,10,0"
+                Background="White"
+                BorderBrush="#E0E7FF"
+                BorderThickness="2"
+                BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                CornerRadius="16">
+                <DockPanel>
+                    <Border
+                        Padding="20,14"
+                        CornerRadius="16,16,0,0"
+                        DockPanel.Dock="Top">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Offset="0" Color="#EEF2FF" />
+                                <GradientStop Offset="1" Color="#E0E7FF" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="#4F46E5"
+                            Text="🎯 Main Navigation Host" />
+                    </Border>
+
+                    <!--  Primary NavigationHost - automatically registers with HostManager  -->
+                    <nav:NavigationHost nav:HostManager.HostName="MainHost">
+                        <nav:NavigationHost.DefaultContent>
+                            <Border>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                        <GradientStop Offset="0" Color="#FAFAFA" />
+                                        <GradientStop Offset="1" Color="#F5F5F5" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="20">
+                                    <TextBlock
+                                        FontSize="48"
+                                        FontWeight="Bold"
+                                        Foreground="#8B5CF6"
+                                        Text="👋"
+                                        TextAlignment="Center" />
+                                    <TextBlock
+                                        FontSize="28"
+                                        FontWeight="Bold"
+                                        Foreground="#6366F1"
+                                        Text="Welcome!"
+                                        TextAlignment="Center" />
+                                    <TextBlock
+                                        FontSize="16"
+                                        Foreground="#64748B"
+                                        Text="Click any button above to navigate"
+                                        TextAlignment="Center" />
+                                    <Border
+                                        Padding="16,10"
+                                        Background="#EEF2FF"
+                                        CornerRadius="8">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontStyle="Italic"
+                                            Foreground="#6366F1"
+                                            Text="✨ This demonstrates DefaultContent property"
+                                            TextAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </nav:NavigationHost.DefaultContent>
+                    </nav:NavigationHost>
+                </DockPanel>
+            </Border>
+
+            <!--  Side Navigation Host  -->
+            <Border
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                Background="White"
+                BorderBrush="#DBEAFE"
+                BorderThickness="2"
+                BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                CornerRadius="16">
+                <DockPanel>
+                    <Border
+                        Padding="20,14"
+                        CornerRadius="16,16,0,0"
+                        DockPanel.Dock="Top">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                <GradientStop Offset="0" Color="#EFF6FF" />
+                                <GradientStop Offset="1" Color="#DBEAFE" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="#0284C7"
+                            Text="📋 Secondary Host" />
+                    </Border>
+
+                    <!--  Secondary NavigationHost - demonstrates multiple hosts  -->
+                    <nav:NavigationHost nav:HostManager.HostName="SideHost">
+                        <nav:NavigationHost.DefaultContent>
+                            <Border>
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                        <GradientStop Offset="0" Color="#FAFAFA" />
+                                        <GradientStop Offset="1" Color="#F5F5F5" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="14">
+                                    <TextBlock
+                                        FontSize="32"
+                                        FontWeight="Bold"
+                                        Foreground="#06B6D4"
+                                        Text="📋"
+                                        TextAlignment="Center" />
+                                    <TextBlock
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="#0284C7"
+                                        Text="Side Panel"
+                                        TextAlignment="Center" />
+                                    <TextBlock
+                                        Margin="20,0"
+                                        FontSize="13"
+                                        Foreground="#64748B"
+                                        Text="Multiple NavigationHosts demo"
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </nav:NavigationHost.DefaultContent>
+                    </nav:NavigationHost>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!--  Status Bar  -->
+        <Border
+            Grid.Row="2"
+            Background="White"
+            BorderBrush="#E0E7FF"
+            BorderThickness="0,2,0,0"
+            BoxShadow="0 -4 12 0 #15000000">
+            <!--  Status Message  -->
+            <Border Padding="16,12">
+                <Border Padding="14,10" CornerRadius="8">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                            <GradientStop Offset="0" Color="#EEF2FF" />
+                            <GradientStop Offset="1" Color="#E0E7FF" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="#4F46E5"
+                        Text="{Binding StatusMessage}" />
+                </Border>
+            </Border>
+        </Border>
+    </Grid>
+
+</Window>

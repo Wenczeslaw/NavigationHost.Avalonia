@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using FluentAssertions;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 
 namespace NavigationHost.Avalonia.Tests.Infrastructure
 {

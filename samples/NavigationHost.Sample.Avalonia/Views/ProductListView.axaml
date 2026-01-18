@@ -1,0 +1,137 @@
+<UserControl
+    x:Class="NavigationHost.Sample.Avalonia.Views.ProductListView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:ProductListViewModel"
+    mc:Ignorable="d">
+
+    <Border>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#FAF5FF" />
+                <GradientStop Offset="0.5" Color="#F3E8FF" />
+                <GradientStop Offset="1" Color="#E9D5FF" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <DockPanel Margin="45">
+            <StackPanel
+                Margin="0,0,0,28"
+                DockPanel.Dock="Top"
+                Spacing="20">
+                <TextBlock
+                    FontSize="42"
+                    FontWeight="Bold"
+                    Foreground="#7C3AED"
+                    Text="{Binding Title}" />
+
+                <Border
+                    Padding="14,10"
+                    HorizontalAlignment="Left"
+                    Background="#DDD6FE"
+                    CornerRadius="10">
+                    <TextBlock
+                        FontSize="17"
+                        FontWeight="Bold"
+                        Foreground="#5B21B6"
+                        Text="{Binding CategoryFilter, StringFormat='📂 Category: {0}'}" />
+                </Border>
+
+                <Border
+                    Padding="26"
+                    Background="White"
+                    BorderBrush="#A78BFA"
+                    BorderThickness="0,0,0,4"
+                    BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                    CornerRadius="16">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="19"
+                            FontWeight="Bold"
+                            Foreground="#7C3AED"
+                            Text="✨ Features Demonstrated:" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ INavigationAware interface implementation" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ OnNavigatedTo receives parameters" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ OnNavigatedFrom cleanup" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ Navigation to another view with parameters" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <Border
+                Padding="0"
+                Background="White"
+                BorderBrush="#DDD6FE"
+                BorderThickness="2"
+                BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                CornerRadius="16">
+                <DockPanel Margin="0,0,0,10">
+                    <Button
+                        Margin="0,18,0,0"
+                        Padding="28,14"
+                        HorizontalAlignment="Center"
+                        Background="#7C3AED"
+                        Command="{Binding ViewProductDetailCommand}"
+                        Content="👁️ View Product Detail"
+                        CornerRadius="10"
+                        DockPanel.Dock="Bottom"
+                        FontSize="15"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        IsEnabled="{Binding SelectedProduct, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#6D28D9" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <DataGrid
+                        Margin="0,0,0,12"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="Horizontal"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Products}"
+                        SelectedItem="{Binding SelectedProduct}"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding Id}"
+                                Header="ID" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Name}"
+                                Header="Name" />
+                            <DataGridTextColumn
+                                Width="160"
+                                Binding="{Binding Category}"
+                                Header="Category" />
+                            <DataGridTextColumn
+                                Width="120"
+                                Binding="{Binding Price, StringFormat='\{0:C}'}"
+                                Header="Price" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </DockPanel>
+    </Border>
+</UserControl>

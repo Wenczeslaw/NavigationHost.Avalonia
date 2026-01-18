@@ -1,0 +1,160 @@
+<UserControl
+    x:Class="NavigationHost.Sample.Avalonia.Views.ProductDetailView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:ProductDetailViewModel"
+    mc:Ignorable="d">
+
+    <Border>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#FDF4FF" />
+                <GradientStop Offset="0.5" Color="#FAE8FF" />
+                <GradientStop Offset="1" Color="#F5D0FE" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <ScrollViewer>
+            <StackPanel Margin="45" Spacing="28">
+                <TextBlock
+                    FontSize="42"
+                    FontWeight="Bold"
+                    Foreground="#C026D3"
+                    Text="{Binding Title}" />
+
+                <Border
+                    Padding="20"
+                    Background="#CCFBF1"
+                    BorderBrush="#5EEAD4"
+                    BorderThickness="2"
+                    CornerRadius="12">
+                    <TextBlock
+                        FontSize="15"
+                        FontStyle="Italic"
+                        Foreground="#115E59"
+                        LineHeight="24"
+                        Text="{Binding NavigationInfo}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <Border
+                    Padding="38"
+                    Background="White"
+                    BorderBrush="#E879F9"
+                    BorderThickness="0,0,0,4"
+                    BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                    CornerRadius="16">
+                    <Grid
+                        Margin="0"
+                        ColumnDefinitions="180,*"
+                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="0,0,0,20"
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#94A3B8"
+                            Text="Product ID:" />
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="0,0,0,20"
+                            FontSize="17"
+                            Foreground="#334155"
+                            Text="{Binding ProductId}" />
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="0,0,0,20"
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#94A3B8"
+                            Text="Name:" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,0,0,20"
+                            FontSize="26"
+                            FontWeight="Bold"
+                            Foreground="#C026D3"
+                            Text="{Binding ProductName}" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="0,0,0,20"
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#94A3B8"
+                            Text="Category:" />
+                        <Border
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="0,0,0,20"
+                            Padding="12,6"
+                            HorizontalAlignment="Left"
+                            Background="#F0ABFC"
+                            CornerRadius="6">
+                            <TextBlock
+                                FontSize="15"
+                                FontWeight="SemiBold"
+                                Foreground="#86198F"
+                                Text="{Binding ProductCategory}" />
+                        </Border>
+
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="0,0,0,20"
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#94A3B8"
+                            Text="Price:" />
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="0,0,0,20"
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Foreground="#C026D3"
+                            Text="{Binding ProductPrice, StringFormat='\{0:C}'}" />
+                    </Grid>
+                </Border>
+
+                <Border
+                    Padding="26"
+                    Background="White"
+                    BorderBrush="#F0ABFC"
+                    BorderThickness="2"
+                    BoxShadow="0 4 8 0 #15000000"
+                    CornerRadius="16">
+                    <StackPanel Spacing="12">
+                        <TextBlock
+                            FontSize="19"
+                            FontWeight="Bold"
+                            Foreground="#C026D3"
+                            Text="✨ Features Demonstrated:" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ Receiving strongly-typed navigation parameters" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ CanNavigateTo parameter validation" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ OnNavigatedTo parameter processing" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

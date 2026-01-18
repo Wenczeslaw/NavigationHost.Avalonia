@@ -1,0 +1,180 @@
+<UserControl
+    x:Class="NavigationHost.Sample.Avalonia.Views.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:SettingsViewModel"
+    mc:Ignorable="d">
+
+    <Border>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#FFF7ED" />
+                <GradientStop Offset="0.5" Color="#FFEDD5" />
+                <GradientStop Offset="1" Color="#FED7AA" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <ScrollViewer>
+            <StackPanel Margin="45" Spacing="28">
+                <TextBlock
+                    FontSize="42"
+                    FontWeight="Bold"
+                    Foreground="#EA580C"
+                    Text="{Binding Title}" />
+
+                <Border Padding="24" CornerRadius="16">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                            <GradientStop Offset="0" Color="#FED7AA" />
+                            <GradientStop Offset="0.5" Color="#FDBA74" />
+                            <GradientStop Offset="1" Color="#FB923C" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="Bold"
+                            Foreground="#9A3412"
+                            Text="⚠️ Navigation Confirmation Demo" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#7C2D12"
+                            LineHeight="24"
+                            Text="Make changes to the settings below, then try to navigate away."
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            FontSize="14"
+                            FontStyle="Italic"
+                            Foreground="#7C2D12"
+                            LineHeight="22"
+                            Text="The CanNavigateFrom() method will block navigation if changes are detected."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="38"
+                    Background="White"
+                    BorderBrush="#FB923C"
+                    BorderThickness="0,0,0,4"
+                    BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                    CornerRadius="16">
+                    <StackPanel Spacing="28">
+                        <TextBlock
+                            FontSize="24"
+                            FontWeight="Bold"
+                            Foreground="#EA580C"
+                            Text="⚙️ User Settings" />
+
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="15"
+                                FontWeight="Bold"
+                                Foreground="#64748B"
+                                Text="User Name:" />
+                            <TextBox
+                                Padding="14,12"
+                                BorderBrush="#FB923C"
+                                BorderThickness="2"
+                                CornerRadius="8"
+                                FontSize="15"
+                                Text="{Binding UserName}"
+                                Watermark="Enter your name" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="12">
+                            <TextBlock
+                                FontSize="15"
+                                FontWeight="Bold"
+                                Foreground="#64748B"
+                                Text="Email:" />
+                            <TextBox
+                                Padding="14,12"
+                                BorderBrush="#FB923C"
+                                BorderThickness="2"
+                                CornerRadius="8"
+                                FontSize="15"
+                                Text="{Binding Email}"
+                                Watermark="Enter your email" />
+                        </StackPanel>
+
+                        <CheckBox
+                            Content="Enable Notifications"
+                            FontSize="15"
+                            FontWeight="SemiBold"
+                            IsChecked="{Binding NotificationsEnabled}" />
+
+                        <Border
+                            Padding="18"
+                            Background="#FEF3C7"
+                            BorderBrush="#F59E0B"
+                            BorderThickness="3"
+                            CornerRadius="10"
+                            IsVisible="{Binding IsDirty}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="24"
+                                    Text="⚠️" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    FontWeight="Bold"
+                                    Foreground="#92400E"
+                                    Text="Unsaved changes detected! Try navigating away..."
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="22"
+                    Background="White"
+                    BorderBrush="#FB923C"
+                    BorderThickness="2"
+                    BoxShadow="0 4 8 0 #15000000"
+                    CornerRadius="16">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="17"
+                            FontWeight="Bold"
+                            Foreground="#EA580C"
+                            Text="✨ Features Demonstrated:" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ CanNavigateFrom() navigation confirmation" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ Blocking navigation based on view state" />
+                        <TextBlock
+                            FontSize="15"
+                            Foreground="#334155"
+                            Text="✓ OnNavigatedFrom() cleanup" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="20"
+                    Background="#CCFBF1"
+                    BorderBrush="#5EEAD4"
+                    BorderThickness="2"
+                    CornerRadius="12">
+                    <TextBlock
+                        FontSize="15"
+                        FontStyle="Italic"
+                        Foreground="#115E59"
+                        LineHeight="24"
+                        Text="{Binding NavigationInfo}"
+                        TextWrapping="Wrap" />
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

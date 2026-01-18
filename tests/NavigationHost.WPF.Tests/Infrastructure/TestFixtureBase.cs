@@ -1,6 +1,6 @@
-﻿using System;
+﻿﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Extensions;
 
 namespace NavigationHost.WPF.Tests.Infrastructure

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.Avalonia.Extensions;
 using NavigationHost.Avalonia.Services;
 

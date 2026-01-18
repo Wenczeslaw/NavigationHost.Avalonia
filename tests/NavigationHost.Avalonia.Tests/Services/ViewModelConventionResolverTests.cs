@@ -2,7 +2,7 @@ using System;
 using Avalonia.Controls;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.Avalonia.Extensions;
 
 // Test namespace patterns

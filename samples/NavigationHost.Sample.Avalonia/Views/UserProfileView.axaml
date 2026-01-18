@@ -1,0 +1,142 @@
+<UserControl
+    x:Class="NavigationHost.Sample.Avalonia.Views.UserProfileView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="400"
+    x:DataType="vm:UserProfileViewModel"
+    mc:Ignorable="d">
+
+    <Border>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Offset="0" Color="#EEF2FF" />
+                <GradientStop Offset="0.5" Color="#E0E7FF" />
+                <GradientStop Offset="1" Color="#C7D2FE" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <ScrollViewer>
+            <StackPanel Margin="28" Spacing="20">
+                <TextBlock
+                    FontSize="28"
+                    FontWeight="Bold"
+                    Foreground="#4F46E5"
+                    Text="{Binding Title}"
+                    TextWrapping="Wrap" />
+
+                <Border
+                    Padding="16"
+                    Background="#C7D2FE"
+                    CornerRadius="12">
+                    <StackPanel Spacing="8">
+                        <TextBlock
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#3730A3"
+                            Text="💡 Secondary Host Demo" />
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="#4338CA"
+                            LineHeight="20"
+                            Text="This view is displayed in the secondary NavigationHost (SideHost)."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="26"
+                    Background="White"
+                    BorderBrush="#818CF8"
+                    BorderThickness="0,0,0,4"
+                    BoxShadow="0 8 16 -2 #15000000, 0 4 8 -2 #0A000000"
+                    CornerRadius="14">
+                    <StackPanel Spacing="20">
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="#94A3B8"
+                                Text="User ID:" />
+                            <TextBlock
+                                FontSize="20"
+                                FontWeight="Bold"
+                                Foreground="#4F46E5"
+                                Text="{Binding UserId}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="#94A3B8"
+                                Text="Name:" />
+                            <TextBlock
+                                FontSize="22"
+                                FontWeight="Bold"
+                                Foreground="#4F46E5"
+                                Text="{Binding UserName}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="#94A3B8"
+                                Text="Member Since:" />
+                            <TextBlock
+                                FontSize="16"
+                                Foreground="#64748B"
+                                Text="{Binding MemberSince}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="#CCFBF1"
+                    BorderBrush="#5EEAD4"
+                    BorderThickness="2"
+                    CornerRadius="12">
+                    <TextBlock
+                        FontSize="13"
+                        FontStyle="Italic"
+                        Foreground="#115E59"
+                        LineHeight="20"
+                        Text="{Binding NavigationInfo}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <Border
+                    Padding="18"
+                    Background="White"
+                    BorderBrush="#A5B4FC"
+                    BorderThickness="2"
+                    BoxShadow="0 4 8 0 #15000000"
+                    CornerRadius="12">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="15"
+                            FontWeight="Bold"
+                            Foreground="#4F46E5"
+                            Text="✨ Features:" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#334155"
+                            Text="✓ Multiple NavigationHosts" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#334155"
+                            Text="✓ Parameter passing" />
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="#334155"
+                            Text="✓ Independent navigation" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

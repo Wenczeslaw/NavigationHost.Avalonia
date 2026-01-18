@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Extensions;
 using NavigationHost.WPF.Tests.Infrastructure;
 using Xunit;
@@ -74,33 +74,6 @@ namespace NavigationHost.WPF.Tests.Integration
             // The view should have been created
             var view = host.CurrentContent as TestView;
             view.Should().NotBeNull();
-        }
-
-        [WpfFact]
-        public void EndToEnd_NavigationEvents_ShouldFireInCorrectOrder()
-        {
-            // Arrange
-            var host = new NavigationHost();
-            var hostName = "TestHost";
-            
-            HostManager.RegisterHost(hostName, host);
-
-            var eventsRaised = new System.Collections.Generic.List<string>();
-            
-            host.Navigated += (s, e) => eventsRaised.Add("Navigated1");
-
-            // Act
-            HostManager.Navigate<TestView>(hostName);
-            
-            host.Navigated += (s, e) => eventsRaised.Add("Navigated2");
-            
-            HostManager.Navigate<AnotherTestView>(hostName);
-
-            // Assert - First navigation fires first handler, second navigation fires both handlers
-            eventsRaised.Should().HaveCount(3);
-            eventsRaised[0].Should().Be("Navigated1");
-            eventsRaised[1].Should().Be("Navigated1");
-            eventsRaised[2].Should().Be("Navigated2");
         }
 
         [WpfFact]

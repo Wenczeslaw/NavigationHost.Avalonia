@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.Avalonia.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.Avalonia.Extensions;
 using NavigationHost.Avalonia.Services;
 
@@ -190,7 +190,7 @@ namespace NavigationHost.Avalonia.Tests.Services
 
             // Assert
             act.Should().Throw<InvalidOperationException>()
-                .WithMessage("*Host 'NonExistingHost' is not registered*");
+                .WithMessage("No host registered with name 'NonExistingHost'.");
         }
 
         [Fact]

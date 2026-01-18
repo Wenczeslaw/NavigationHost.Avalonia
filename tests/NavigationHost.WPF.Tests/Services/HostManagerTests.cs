@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Tests.Infrastructure;
 using Xunit;
 
@@ -179,7 +179,7 @@ namespace NavigationHost.WPF.Tests.Services
             HostManager.RegisterHost("TestHost", host);
 
             // Act
-            Action act = () => HostManager.Navigate("TestHost", null!);
+            Action act = () => HostManager.Navigate("TestHost", (object)null!);
 
             // Assert
             act.Should().Throw<ArgumentNullException>()

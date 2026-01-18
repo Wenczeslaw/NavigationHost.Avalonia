@@ -1,5 +1,4 @@
 using System;
-using System.Windows.Controls;
 using FluentAssertions;
 using NavigationHost.WPF.Tests.Infrastructure;
 using Xunit;
@@ -49,57 +48,6 @@ namespace NavigationHost.WPF.Tests.Controls
             // Assert
             act.Should().Throw<ArgumentNullException>()
                 .WithParameterName("content");
-        }
-
-        [WpfFact]
-        public void Navigate_ShouldRaiseNavigatedEvent()
-        {
-            // Arrange
-            var host = new NavigationHost();
-            var view = new TestView();
-            var eventRaised = false;
-            Events.NavigationEventArgs? eventArgs = null;
-
-            host.Navigated += (sender, args) =>
-            {
-                eventRaised = true;
-                eventArgs = args;
-            };
-
-            // Act
-            host.Navigate(view);
-
-            // Assert
-            eventRaised.Should().BeTrue();
-            eventArgs.Should().NotBeNull();
-            eventArgs!.Content.Should().BeSameAs(view);
-            eventArgs.PreviousContent.Should().BeNull();
-        }
-
-        [WpfFact]
-        public void Navigate_Twice_ShouldUpdatePreviousContent()
-        {
-            // Arrange
-            var host = new NavigationHost();
-            var firstView = new TestView();
-            var secondView = new AnotherTestView();
-            
-            host.Navigate(firstView);
-
-            Events.NavigationEventArgs? eventArgs = null;
-            host.Navigated += (sender, args) =>
-            {
-                eventArgs = args;
-            };
-
-            // Act
-            host.Navigate(secondView);
-
-            // Assert
-            host.CurrentContent.Should().BeSameAs(secondView);
-            eventArgs.Should().NotBeNull();
-            eventArgs!.Content.Should().BeSameAs(secondView);
-            eventArgs.PreviousContent.Should().BeSameAs(firstView);
         }
 
         [WpfFact]

@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NavigationHost.WPF.Abstractions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Extensions;
 using NavigationHost.WPF.Services;
 using NavigationHost.WPF.Tests.Infrastructure;

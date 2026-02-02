@@ -4,7 +4,25 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>2.0.0</Version>
+        
+        <!-- NuGet Package Metadata -->
+        <PackageId>NavigationHost.Abstractions</PackageId>
+        <Version>2.1.1</Version>
+        <Authors>Wenczeslaw</Authors>
+        <Company>Wenczeslaw</Company>
+        <Description>Core abstractions and interfaces for NavigationHost library. Provides INavigationHost, IHostManager, INavigationAware and IAsyncNavigationAware interfaces for building navigation-aware applications with both synchronous and asynchronous lifecycle support.</Description>
+        <PackageTags>Navigation;Abstractions;Interfaces;MVVM;Async;Lifecycle</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2026 Wenczeslaw and contributors</Copyright>
+        <PackageProjectUrl>https://github.com/Wenczeslaw/NavigationHost</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Wenczeslaw/NavigationHost.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageReleaseNotes>v2.1.1: Added HostExists() method to IHostManager for checking host registration status. This enables better error handling and conditional navigation logic.</PackageReleaseNotes>
+        
+        <!-- Documentation -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\NavigationHost.Abstractions.xml</DocumentationFile>
     </PropertyGroup>
 
 </Project>

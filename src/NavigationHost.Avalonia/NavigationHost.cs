@@ -96,6 +96,10 @@ namespace NavigationHost.Avalonia
             UpdateContentPresenter();
         }
 
+        /// <summary>
+        ///     Called when the control template is applied.
+        /// </summary>
+        /// <param name="e">The template applied event arguments.</param>
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);

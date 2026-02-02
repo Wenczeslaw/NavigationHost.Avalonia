@@ -1,22 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFrameworks>net8.0-windows;net6.0-windows</TargetFrameworks>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
-        <Authors>Wenczeslaw</Authors>
-        <!-- NuGet package metadata -->
-        <PackageId>NavigationHost.WPF</PackageId>
-        <Version>2.0.0</Version>
-        <Description>A lightweight and flexible navigation library for WPF applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping and dependency injection.</Description>
-        <PackageTags>WPF;Navigation;MVVM;XAML;DI</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryType>git</RepositoryType>
-        <Copyright>MIT</Copyright>
-        <RepositoryUrl>https://github.com/Wenczeslaw/Avalonia.Navigation.git</RepositoryUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <TargetFrameworks>net8.0-windows;net6.0-windows</TargetFrameworks>
         <UseWPF>true</UseWPF>
+        
+        <!-- NuGet Package Metadata -->
+        <PackageId>NavigationHost.WPF</PackageId>
+        <Version>2.1.1</Version>
+        <Authors>Wenczeslaw</Authors>
+        <Company>Wenczeslaw</Company>
+        <Description>A lightweight and flexible navigation library for WPF applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping, dependency injection, and both synchronous and asynchronous navigation lifecycle events with INavigationAware and IAsyncNavigationAware interfaces.</Description>
+        <PackageTags>WPF;Navigation;MVVM;XAML;DI;Async;Windows</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2026 Wenczeslaw and contributors</Copyright>
+        <PackageProjectUrl>https://github.com/Wenczeslaw/NavigationHost</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Wenczeslaw/NavigationHost.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageReleaseNotes>v2.1.1: Added HostExists() method and RequestNavigate extension methods (Prism-style) for safe navigation with automatic retry. Fixed repeated navigation lifecycle issue - OnNavigatedTo now correctly called on every navigation. Improved content alignment - NavigationHost now uses Stretch alignment by default.</PackageReleaseNotes>
+        
+        <!-- Documentation -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\NavigationHost.Wpf.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

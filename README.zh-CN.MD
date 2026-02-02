@@ -685,6 +685,13 @@ public interface IHostManager
     IEnumerable<string> GetHostNames();
     
     /// <summary>
+    /// 检查指定名称的宿主是否存在
+    /// </summary>
+    /// <param name="hostName">要检查的宿主名称</param>
+    /// <returns>如果宿主存在则返回true，否则返回false</returns>
+    bool HostExists(string hostName);
+    
+    /// <summary>
     /// 导航到指定的控件实例
     /// </summary>
     /// <param name="hostName">目标宿主名称</param>
@@ -811,6 +818,122 @@ public interface IViewModelConventionResolver
     Type? ResolveViewModelType(Type viewType);
 }
 ```
+
+### RequestNavigate 扩展方法（Prism风格）
+
+安全导航的扩展方法，支持宿主未就绪时自动重试：
+
+```csharp
+using NavigationHost.Avalonia.Extensions;  // 或 NavigationHost.WPF.Extensions
+
+public static class HostManagerNavigationExtensions
+{
+    /// <summary>
+    /// 尝试导航，如果宿主未就绪可选择重试
+    /// 类似于 Prism 的 RequestNavigate 模式
+    /// </summary>
+    void RequestNavigate(
+        this IHostManager hostManager,
+        string hostName,
+        Type contentType,
+        object? parameter = null,
+        Action<NavigationResult>? onComplete = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// RequestNavigate 的泛型版本
+    /// </summary>
+    void RequestNavigate<T>(
+        this IHostManager hostManager,
+        string hostName,
+        object? parameter = null,
+        Action<NavigationResult>? onComplete = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// RequestNavigate 的异步版本
+    /// </summary>
+    Task<NavigationResult> RequestNavigateAsync(
+        this IHostManager hostManager,
+        string hostName,
+        Type contentType,
+        object? parameter = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// RequestNavigate 的泛型异步版本
+    /// </summary>
+    Task<NavigationResult> RequestNavigateAsync<T>(
+        this IHostManager hostManager,
+        string hostName,
+        object? parameter = null,
+        bool retryOnHostNotReady = true);
+}
+```
+
+**NavigationResult：**
+
+```csharp
+public class NavigationResult
+{
+    public bool Success { get; set; }
+    public Exception? Error { get; set; }
+}
+```
+
+**使用示例：**
+
+```csharp
+using NavigationHost.Avalonia.Extensions;
+
+public partial class NavigationViewModel : ObservableObject
+{
+    private readonly IHostManager _hostManager;
+    private readonly ILogger _logger;
+    
+    partial void OnCurrentMenuItemChanged(MenuItem? value)
+    {
+        if (value == null) return;
+        
+        // 使用 RequestNavigate 自动处理宿主未就绪的情况
+        _hostManager.RequestNavigate(
+            "MainHost",
+            value.ViewType,
+            parameter: null,
+            onComplete: result =>
+            {
+                if (!result.Success)
+                {
+                    _logger.LogError(result.Error, "导航失败");
+                }
+            },
+            retryOnHostNotReady: true  // 宿主未就绪时自动重试
+        );
+    }
+    
+    // 或使用异步版本
+    private async Task NavigateAsync(Type viewType)
+    {
+        var result = await _hostManager.RequestNavigateAsync(
+            "MainHost",
+            viewType,
+            retryOnHostNotReady: true
+        );
+        
+        if (!result.Success)
+        {
+            ShowError(result.Error?.Message);
+        }
+    }
+}
+```
+
+**优势：**
+- ✅ 自动处理宿主未就绪的情况
+- ✅ 提供导航结果回调
+- ✅ 类似 Prism 的 RequestNavigate API
+- ✅ 支持同步和异步模式
+
 
 ## 🏗️ 架构
 

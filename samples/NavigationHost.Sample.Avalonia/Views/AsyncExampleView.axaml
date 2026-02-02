@@ -1,0 +1,66 @@
+﻿<UserControl
+    x:Class="NavigationHost.Sample.Avalonia.Views.AsyncExampleView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:NavigationHost.Sample.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:AsyncExampleViewModel"
+    mc:Ignorable="d">
+
+    <Border Padding="40">
+        <StackPanel Spacing="20">
+            <TextBlock
+                FontSize="32"
+                FontWeight="Bold"
+                Foreground="#0369A1"
+                Text="{Binding Title}" />
+
+            <TextBlock
+                FontSize="16"
+                Foreground="#475569"
+                Text="{Binding StatusMessage}" />
+
+            <ProgressBar
+                Height="4"
+                IsIndeterminate="True"
+                IsVisible="{Binding IsLoading}" />
+
+            <Border
+                Padding="20"
+                Background="#F8FAFC"
+                BorderBrush="#E2E8F0"
+                BorderThickness="1"
+                CornerRadius="8"
+                IsVisible="{Binding LoadedData, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <StackPanel Spacing="10">
+                    <TextBlock
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#334155"
+                        Text="Loaded Data:" />
+                    <TextBlock
+                        FontSize="14"
+                        Foreground="#64748B"
+                        Text="{Binding LoadedData}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock
+                FontSize="14"
+                Foreground="#94A3B8"
+                TextWrapping="Wrap">
+                <Run Text="This view demonstrates async navigation lifecycle methods." />
+                <LineBreak />
+                <Run Text="- Data is loaded asynchronously when navigating to this view" />
+                <LineBreak />
+                <Run Text="- Navigation can be cancelled during async operations" />
+                <LineBreak />
+                <Run Text="- Cleanup is performed asynchronously when leaving" />
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

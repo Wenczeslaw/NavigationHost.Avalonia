@@ -4,6 +4,8 @@
     xmlns:local="clr-namespace:NavigationHost.WPF">
 
     <Style TargetType="{x:Type local:NavigationHost}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NavigationHost}">

@@ -1,22 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
-        <Authors>Wenczeslaw</Authors>
-        <!-- NuGet package metadata -->
-        <PackageId>NavigationHost.Avalonia</PackageId>
-        <Version>2.0.0</Version>
-        <Description>A lightweight and flexible navigation library for Avalonia applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping and dependency injection.</Description>
-        <PackageTags>Avalonia;Navigation;MVVM;XAML;DI</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryType>git</RepositoryType>
-        <Copyright>MIT</Copyright>
-        <RepositoryUrl>https://github.com/Wenczeslaw/Avalonia.Navigation.git</RepositoryUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <TargetFrameworks>netstandard2.0</TargetFrameworks>
-        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <UserSecretsId>535919ee-badd-447b-9485-cf730d19369a</UserSecretsId>
+        
+        <!-- NuGet Package Metadata -->
+        <PackageId>NavigationHost.Avalonia</PackageId>
+        <Version>2.1.1</Version>
+        <Authors>Wenczeslaw</Authors>
+        <Company>Wenczeslaw</Company>
+        <Description>A lightweight and flexible navigation library for Avalonia applications, inspired by Prism's RegionManager pattern. Supports multiple navigation hosts, view-viewmodel mapping, dependency injection, and both synchronous and asynchronous navigation lifecycle events with INavigationAware and IAsyncNavigationAware interfaces.</Description>
+        <PackageTags>Avalonia;Navigation;MVVM;XAML;DI;Async;</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Copyright>Copyright (c) 2026 Wenczeslaw and contributors</Copyright>
+        <PackageProjectUrl>https://github.com/Wenczeslaw/NavigationHost</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Wenczeslaw/NavigationHost.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageReleaseNotes>v2.1.1: Added HostExists() method and RequestNavigate extension methods (Prism-style) for safe navigation with automatic retry. All navigation lifecycle methods are now correctly supported in both sync and async navigation paths.</PackageReleaseNotes>
+        
+        <!-- Documentation -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\NavigationHost.Avalonia.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NavigationHost.Abstractions
 {
@@ -38,6 +39,13 @@ namespace NavigationHost.Abstractions
         IEnumerable<string> GetHostNames();
 
         /// <summary>
+        ///     Checks if a host with the specified name exists.
+        /// </summary>
+        /// <param name="hostName">The name of the host to check.</param>
+        /// <returns>True if the host exists; otherwise, false.</returns>
+        bool HostExists(string hostName);
+
+        /// <summary>
         ///     Navigates to the specified content in a host.
         /// </summary>
         /// <param name="hostName">The name of the host to navigate in.</param>
@@ -63,6 +71,36 @@ namespace NavigationHost.Abstractions
         /// <param name="hostName">The name of the host to navigate in.</param>
         /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
         void Navigate<T>(string hostName, object? parameter = null);
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content in a host.
+        /// </summary>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="content">The content to navigate to.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        Task NavigateAsync(string hostName, object content);
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content type with optional parameters in a host.
+        /// </summary>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="contentType">The type of content to navigate to.</param>
+        /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        Task NavigateAsync(
+            string hostName,
+            Type contentType,
+            object? parameter = null
+        );
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content type in a host.
+        /// </summary>
+        /// <typeparam name="T">The type of content to navigate to.</typeparam>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        Task NavigateAsync<T>(string hostName, object? parameter = null);
     }
 }
 

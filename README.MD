@@ -685,6 +685,13 @@ public interface IHostManager
     IEnumerable<string> GetHostNames();
     
     /// <summary>
+    /// Check if a host with the specified name exists
+    /// </summary>
+    /// <param name="hostName">Name of the host to check</param>
+    /// <returns>True if the host exists, false otherwise</returns>
+    bool HostExists(string hostName);
+    
+    /// <summary>
     /// Navigate to a specific control instance
     /// </summary>
     /// <param name="hostName">Target host name</param>
@@ -811,6 +818,122 @@ public interface IViewModelConventionResolver
     Type? ResolveViewModelType(Type viewType);
 }
 ```
+
+### RequestNavigate Extension Methods (Prism-style)
+
+Extension methods for safe navigation with automatic retry when host is not ready:
+
+```csharp
+using NavigationHost.Avalonia.Extensions;  // or NavigationHost.WPF.Extensions
+
+public static class HostManagerNavigationExtensions
+{
+    /// <summary>
+    /// Attempts to navigate with optional retry if host is not ready.
+    /// Similar to Prism's RequestNavigate pattern.
+    /// </summary>
+    void RequestNavigate(
+        this IHostManager hostManager,
+        string hostName,
+        Type contentType,
+        object? parameter = null,
+        Action<NavigationResult>? onComplete = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// Generic version of RequestNavigate
+    /// </summary>
+    void RequestNavigate<T>(
+        this IHostManager hostManager,
+        string hostName,
+        object? parameter = null,
+        Action<NavigationResult>? onComplete = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// Async version of RequestNavigate
+    /// </summary>
+    Task<NavigationResult> RequestNavigateAsync(
+        this IHostManager hostManager,
+        string hostName,
+        Type contentType,
+        object? parameter = null,
+        bool retryOnHostNotReady = true);
+    
+    /// <summary>
+    /// Generic async version of RequestNavigate
+    /// </summary>
+    Task<NavigationResult> RequestNavigateAsync<T>(
+        this IHostManager hostManager,
+        string hostName,
+        object? parameter = null,
+        bool retryOnHostNotReady = true);
+}
+```
+
+**NavigationResult:**
+
+```csharp
+public class NavigationResult
+{
+    public bool Success { get; set; }
+    public Exception? Error { get; set; }
+}
+```
+
+**Usage Example:**
+
+```csharp
+using NavigationHost.Avalonia.Extensions;
+
+public partial class NavigationViewModel : ObservableObject
+{
+    private readonly IHostManager _hostManager;
+    private readonly ILogger _logger;
+    
+    partial void OnCurrentMenuItemChanged(MenuItem? value)
+    {
+        if (value == null) return;
+        
+        // Use RequestNavigate for automatic retry when host is not ready
+        _hostManager.RequestNavigate(
+            "MainHost",
+            value.ViewType,
+            parameter: null,
+            onComplete: result =>
+            {
+                if (!result.Success)
+                {
+                    _logger.LogError(result.Error, "Navigation failed");
+                }
+            },
+            retryOnHostNotReady: true  // Automatically retry if host not ready
+        );
+    }
+    
+    // Or use async version
+    private async Task NavigateAsync(Type viewType)
+    {
+        var result = await _hostManager.RequestNavigateAsync(
+            "MainHost",
+            viewType,
+            retryOnHostNotReady: true
+        );
+        
+        if (!result.Success)
+        {
+            ShowError(result.Error?.Message);
+        }
+    }
+}
+```
+
+**Benefits:**
+- ✅ Automatically handles host not ready situations
+- ✅ Provides navigation result callbacks
+- ✅ Similar API to Prism's RequestNavigate
+- ✅ Supports both sync and async patterns
+
 
 ## 🏗️ Architecture
 

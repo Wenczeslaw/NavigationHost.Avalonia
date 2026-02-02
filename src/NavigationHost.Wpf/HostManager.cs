@@ -84,21 +84,22 @@ namespace NavigationHost.WPF
         }
 
         /// <summary>
-        ///     Gets a platform-specific navigation host by host name (internal helper).
-        /// </summary>
-        private NavigationHost? GetPlatformHost(string hostName)
-        {
-            var host = _hostRegistry.GetHost(hostName);
-            return host as NavigationHost;
-        }
-
-        /// <summary>
         ///     Gets all registered host names.
         /// </summary>
         /// <returns>A collection of registered host names.</returns>
         public IEnumerable<string> GetHostNames()
         {
             return _hostRegistry.GetHostNames();
+        }
+
+        /// <summary>
+        ///     Checks if a host with the specified name exists.
+        /// </summary>
+        /// <param name="hostName">The name of the host to check.</param>
+        /// <returns>True if the host exists; otherwise, false.</returns>
+        public bool HostExists(string hostName)
+        {
+            return GetHost(hostName) != null;
         }
 
         /// <summary>
@@ -120,6 +121,18 @@ namespace NavigationHost.WPF
             var host = GetHost(hostName);
             if (host == null)
                 throw new InvalidOperationException($"No host registered with name '{hostName}'.");
+
+            // Get current content to check navigation lifecycle
+            var currentContent = (host as NavigationHost)?.CurrentContent;
+
+            // Navigation lifecycle: Check if current ViewModel allows navigation away (sync only)
+            if (currentContent?.DataContext != null && currentContent.DataContext is INavigationAware currentNavigationAware)
+            {
+                if (!currentNavigationAware.CanNavigateFrom())
+                    return; // Navigation cancelled by current ViewModel
+
+                currentNavigationAware.OnNavigatedFrom();
+            }
 
             host.SetContent(frameworkElement);
         }
@@ -163,6 +176,98 @@ namespace NavigationHost.WPF
         public void Navigate<T>(string hostName, object? parameter = null)
         {
             Navigate(hostName, typeof(T), parameter);
+        }
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content in a host.
+        /// </summary>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="content">The content to navigate to.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        public async System.Threading.Tasks.Task NavigateAsync(string hostName, object content)
+        {
+            if (string.IsNullOrWhiteSpace(hostName))
+                throw new ArgumentException("Host name cannot be null or whitespace.", nameof(hostName));
+
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            if (!(content is FrameworkElement frameworkElement))
+                throw new ArgumentException("Content must be a FrameworkElement for WPF platform.", nameof(content));
+
+            var host = GetHost(hostName);
+            if (host == null)
+                throw new InvalidOperationException($"No host registered with name '{hostName}'.");
+
+            // Get current content to check navigation lifecycle
+            var currentContent = (host as NavigationHost)?.CurrentContent;
+
+            // Navigation lifecycle: Check if current ViewModel allows navigation away
+            if (currentContent?.DataContext != null)
+            {
+                // Check async interface first
+                if (currentContent.DataContext is IAsyncNavigationAware currentAsyncNavigationAware)
+                {
+                    if (!await currentAsyncNavigationAware.CanNavigateFromAsync())
+                        return; // Navigation cancelled by current ViewModel
+
+                    await currentAsyncNavigationAware.OnNavigatedFromAsync();
+                }
+                else if (currentContent.DataContext is INavigationAware currentNavigationAware)
+                {
+                    if (!currentNavigationAware.CanNavigateFrom())
+                        return; // Navigation cancelled by current ViewModel
+
+                    currentNavigationAware.OnNavigatedFrom();
+                }
+            }
+
+            host.SetContent(frameworkElement);
+        }
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content type with optional parameters in a host.
+        /// </summary>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="contentType">The type of content to navigate to.</param>
+        /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        public async System.Threading.Tasks.Task NavigateAsync(string hostName, Type contentType, object? parameter = null)
+        {
+            if (string.IsNullOrWhiteSpace(hostName))
+                throw new ArgumentException("Host name cannot be null or whitespace.", nameof(hostName));
+
+            if (contentType == null)
+                throw new ArgumentNullException(nameof(contentType));
+
+            if (!typeof(FrameworkElement).IsAssignableFrom(contentType))
+                throw new ArgumentException($"Content type must derive from FrameworkElement.", nameof(contentType));
+
+            // Create the view instance
+            var view = _instanceFactory.CreateInstance(contentType);
+
+            // Try to resolve and set ViewModel using convention
+            if (view is FrameworkElement frameworkElement)
+            {
+                var shouldNavigate = await TrySetViewModelByConventionAsync(frameworkElement, parameter);
+                if (!shouldNavigate)
+                    return; // Navigation was cancelled
+            }
+
+            // Navigate to the view
+            await NavigateAsync(hostName, view);
+        }
+
+        /// <summary>
+        ///     Asynchronously navigates to the specified content type in a host.
+        /// </summary>
+        /// <typeparam name="T">The type of content to navigate to.</typeparam>
+        /// <param name="hostName">The name of the host to navigate in.</param>
+        /// <param name="parameter">Optional parameter to pass to the view model or content.</param>
+        /// <returns>A task representing the asynchronous navigation operation.</returns>
+        public System.Threading.Tasks.Task NavigateAsync<T>(string hostName, object? parameter = null)
+        {
+            return NavigateAsync(hostName, typeof(T), parameter);
         }
 
         /// <summary>
@@ -255,8 +360,19 @@ namespace NavigationHost.WPF
 
         private void TrySetViewModelByConvention(FrameworkElement view, object? parameter)
         {
+            // Check if view already has a DataContext (e.g., set in XAML or constructor)
             if (view.DataContext != null)
-                return; // Already has a DataContext
+            {
+                // Even if DataContext exists, call navigation lifecycle methods for re-navigation
+                if (view.DataContext is INavigationAware existingNavigationAware)
+                {
+                    if (existingNavigationAware.CanNavigateTo(parameter))
+                    {
+                        existingNavigationAware.OnNavigatedTo(parameter);
+                    }
+                }
+                return; // Keep existing DataContext
+            }
 
             var viewType = view.GetType();
             var viewModelType = _conventionResolver.ResolveViewModelType(viewType);
@@ -287,6 +403,61 @@ namespace NavigationHost.WPF
             {
                 // If ViewModel creation fails, continue without it
             }
+        }
+
+        private async System.Threading.Tasks.Task<bool> TrySetViewModelByConventionAsync(FrameworkElement view, object? parameter)
+        {
+            // Check if view already has a DataContext (e.g., set in XAML or constructor)
+            if (view.DataContext != null)
+            {
+                // Even if DataContext exists, call navigation lifecycle methods for re-navigation
+                if (view.DataContext is IAsyncNavigationAware existingAsyncNavigationAware)
+                {
+                    if (!await existingAsyncNavigationAware.CanNavigateToAsync(parameter))
+                        return false; // Navigation cancelled
+                    
+                    await existingAsyncNavigationAware.OnNavigatedToAsync(parameter);
+                }
+                else if (view.DataContext is INavigationAware existingNavigationAware)
+                {
+                    if (!existingNavigationAware.CanNavigateTo(parameter))
+                        return false; // Navigation cancelled
+                    
+                    existingNavigationAware.OnNavigatedTo(parameter);
+                }
+                return true; // Keep existing DataContext, continue with navigation
+            }
+
+            var viewType = view.GetType();
+            var viewModelType = _conventionResolver.ResolveViewModelType(viewType);
+
+            if (viewModelType == null)
+                return true; // No ViewModel found by convention, continue with navigation
+
+            var viewModel = _instanceFactory.CreateViewModel(viewModelType);
+
+            // If ViewModel implements IAsyncNavigationAware or INavigationAware, call navigation methods
+            if (viewModel is IAsyncNavigationAware asyncNavigationAware)
+            {
+                if (!await asyncNavigationAware.CanNavigateToAsync(parameter))
+                {
+                    return false; // Navigation cancelled
+                }
+
+                await asyncNavigationAware.OnNavigatedToAsync(parameter);
+            }
+            else if (viewModel is INavigationAware navigationAware)
+            {
+                if (!navigationAware.CanNavigateTo(parameter))
+                {
+                    return false; // Navigation cancelled
+                }
+
+                navigationAware.OnNavigatedTo(parameter);
+            }
+
+            view.DataContext = viewModel;
+            return true; // Navigation should proceed
         }
     }
 }

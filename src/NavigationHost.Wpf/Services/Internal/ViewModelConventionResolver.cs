@@ -5,7 +5,8 @@ using NavigationHost.Abstractions;
 namespace NavigationHost.WPF.Services.Internal
 {
     /// <summary>
-    ///     Internal service that resolves view model types from view types based on naming conventions.
+    ///     Internal service that resolves view model types from view types.
+    ///     Supports explicit mappings that take precedence over convention-based resolution.
     ///     Convention: ViewName -> ViewModelName (e.g., HomeView -> HomeViewModel)
     /// </summary>
     internal sealed class ViewModelConventionResolver : IViewModelConventionResolver
@@ -13,16 +14,34 @@ namespace NavigationHost.WPF.Services.Internal
         private const string ViewSuffix = "View";
         private const string ViewModelSuffix = "ViewModel";
 
+        private readonly IViewModelMappingRegistry _mappingRegistry;
+
         /// <summary>
-        ///     Attempts to resolve the view model type for a given view type based on conventions.
+        ///     Initializes a new instance of the ViewModelConventionResolver.
+        /// </summary>
+        /// <param name="mappingRegistry">The mapping registry for explicit View-ViewModel mappings.</param>
+        public ViewModelConventionResolver(IViewModelMappingRegistry mappingRegistry)
+        {
+            _mappingRegistry = mappingRegistry ?? throw new ArgumentNullException(nameof(mappingRegistry));
+        }
+
+        /// <summary>
+        ///     Attempts to resolve the view model type for a given view type.
+        ///     First checks explicit mappings, then falls back to convention-based resolution.
         /// </summary>
         /// <param name="viewType">The view type.</param>
-        /// <returns>The view model type if resolved by convention; otherwise, null.</returns>
+        /// <returns>The view model type if resolved; otherwise, null.</returns>
         public Type? ResolveViewModelType(Type viewType)
         {
             if (viewType == null)
                 return null;
 
+            // 1. Check explicit mapping first (highest priority)
+            var explicitMapping = _mappingRegistry.GetViewModelType(viewType);
+            if (explicitMapping != null)
+                return explicitMapping;
+
+            // 2. Fall back to convention-based resolution
             // Get the view type name
             var viewTypeName = viewType.Name;
 

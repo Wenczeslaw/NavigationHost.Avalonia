@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using NavigationHost.Abstractions;
 using NavigationHost.WPF.Services.Internal;
 using NavigationHost.WPF.Tests.Infrastructure;
 using Xunit;
@@ -15,7 +16,9 @@ namespace NavigationHost.WPF.Tests.Services.Internal
 
         public ViewModelConventionResolverTests()
         {
-            _resolver = new ViewModelConventionResolver();
+            // Create a registry for the resolver
+            var mappingRegistry = new ViewModelMappingRegistry();
+            _resolver = new ViewModelConventionResolver(mappingRegistry);
         }
 
         [Fact]

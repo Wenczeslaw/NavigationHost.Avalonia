@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NavigationHost.Abstractions;
@@ -23,7 +23,29 @@ namespace NavigationHost.WPF.Extensions
 
             // Register internal services
             services.TryAddSingleton<IHostRegistry, Services.Internal.HostRegistry>();
-            services.TryAddSingleton<IViewModelConventionResolver, Services.Internal.ViewModelConventionResolver>();
+            
+            // Register mapping registry with a factory that applies all pending mappings
+            services.TryAddSingleton<IViewModelMappingRegistry>(provider =>
+            {
+                var registry = new Services.Internal.ViewModelMappingRegistry();
+                
+                // Apply all registered mappings when the registry is created
+                var mappingRegistrations = provider.GetServices<IViewModelMappingRegistration>();
+                foreach (var registration in mappingRegistrations)
+                {
+                    registration.Register(registry);
+                }
+                
+                return registry;
+            });
+            
+            // Register convention resolver that uses the already-initialized registry
+            services.TryAddSingleton<IViewModelConventionResolver>(provider =>
+            {
+                var mappingRegistry = provider.GetRequiredService<IViewModelMappingRegistry>();
+                return new Services.Internal.ViewModelConventionResolver(mappingRegistry);
+            });
+            
             services.TryAddSingleton<Services.Internal.InstanceFactory>();
 
             // Register HostManager as singleton
@@ -63,6 +85,7 @@ namespace NavigationHost.WPF.Extensions
 
         /// <summary>
         ///     Registers a view and its view model in the service collection.
+        ///     Automatically creates an explicit View-ViewModel mapping.
         /// </summary>
         /// <typeparam name="TView">The view type to register.</typeparam>
         /// <typeparam name="TViewModel">The view model type to register.</typeparam>
@@ -74,7 +97,40 @@ namespace NavigationHost.WPF.Extensions
         {
             services.TryAddTransient<TView>();
             services.TryAddTransient<TViewModel>();
+            
+            // Automatically register the View-ViewModel mapping
+            services.AddSingleton<IViewModelMappingRegistration>(
+                new ViewModelMappingRegistration(typeof(TView), typeof(TViewModel)));
+            
             return services;
+        }
+    }
+
+    /// <summary>
+    ///     Interface to mark services that need to register mappings.
+    /// </summary>
+    internal interface IViewModelMappingRegistration
+    {
+        void Register(IViewModelMappingRegistry registry);
+    }
+
+    /// <summary>
+    ///     Internal class to hold mapping configuration that will be applied when accessed.
+    /// </summary>
+    internal class ViewModelMappingRegistration : IViewModelMappingRegistration
+    {
+        private readonly Type _viewType;
+        private readonly Type _viewModelType;
+
+        public ViewModelMappingRegistration(Type viewType, Type viewModelType)
+        {
+            _viewType = viewType;
+            _viewModelType = viewModelType;
+        }
+
+        public void Register(IViewModelMappingRegistry registry)
+        {
+            registry.RegisterMapping(_viewType, _viewModelType);
         }
     }
 }

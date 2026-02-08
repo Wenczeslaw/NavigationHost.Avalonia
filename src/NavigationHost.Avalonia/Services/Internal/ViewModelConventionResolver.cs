@@ -9,24 +9,41 @@ namespace NavigationHost.Avalonia.Services.Internal
     /// <summary>
     ///     Internal implementation of convention-based view model resolver.
     ///     Automatically resolves view model types from view types based on naming conventions.
+    ///     Supports explicit mappings that take precedence over convention-based resolution.
     /// </summary>
     internal sealed class ViewModelConventionResolver : AbstractionsNS.IViewModelConventionResolver
     {
         private const string ViewSuffix = "View";
         private const string ViewModelSuffix = "ViewModel";
 
+        private readonly AbstractionsNS.IViewModelMappingRegistry _mappingRegistry;
+
         /// <summary>
-        ///     Attempts to resolve the view model type for a given view type based on conventions.
+        ///     Initializes a new instance of the ViewModelConventionResolver.
+        /// </summary>
+        /// <param name="mappingRegistry">The mapping registry for explicit View-ViewModel mappings.</param>
+        public ViewModelConventionResolver(AbstractionsNS.IViewModelMappingRegistry mappingRegistry)
+        {
+            _mappingRegistry = mappingRegistry ?? throw new ArgumentNullException(nameof(mappingRegistry));
+        }
+
+        /// <summary>
+        ///     Attempts to resolve the view model type for a given view type.
+        ///     First checks explicit mappings, then falls back to convention-based resolution.
         /// </summary>
         /// <param name="viewType">The view type.</param>
-        /// <returns>The view model type if resolved by convention; otherwise, null.</returns>
+        /// <returns>The view model type if resolved; otherwise, null.</returns>
         public Type? ResolveViewModelType(Type viewType)
         {
             if (viewType == null)
                 throw new ArgumentNullException(nameof(viewType));
 
+            // 1. Check explicit mapping first (highest priority)
+            var explicitMapping = _mappingRegistry.GetViewModelType(viewType);
+            if (explicitMapping != null)
+                return explicitMapping;
 
-            // Use default convention: ViewName -> ViewModelName
+            // 2. Use default convention: ViewName -> ViewModelName
             var viewName = viewType.Name;
             var viewModelName = GetViewModelNameByConvention(viewName);
 

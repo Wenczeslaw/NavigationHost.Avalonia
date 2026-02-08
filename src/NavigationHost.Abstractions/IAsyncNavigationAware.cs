@@ -32,6 +32,8 @@ public interface IAsyncNavigationAware
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains true to allow navigation away, false to cancel navigation and stay on current view.</returns>
     Task<bool> CanNavigateFromAsync();
+    
+    
 
     /// <summary>
     ///     Called asynchronously when navigating away from the current view.
